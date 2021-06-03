@@ -1,24 +1,19 @@
 var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
     
-    var pixArray = new Set();
-    var temp = new Set();
+    var pixArray = new Set(); // Pixels are stored in a HashSet
     
     var ctx = canvas.getContext('2d');
     
-    var poi = function(x,y){
+    var pointToInt = function(x,y){
         return y*pxPerW+x;
     }
     
     var setPixel = function(x,y) {
-        var val = poi(x,y);
+        var val = pointToInt(x,y);
         pixArray.add(val);
     }
     
-    var getPixel = function(x,y){
-        return pixArray.has(poi(x,y));
-    }
-    
-    var intToPoint = function(x) {
+    var intTopointToIntnt = function(x) {
         var y = Math.floor(x/pxPerH);
         var x = Math.floor(x%pxPerW);
         return {x: x, y: y};
@@ -33,7 +28,7 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
         ctx.fillStyle = "black";
         
         for (var it = pixArray.values(), val= null; val=it.next().value; ) {
-            var pt = intToPoint(val);
+            var pt = intTopointToIntnt(val);
             ctx.beginPath();
             ctx.rect(pt.x*cw, pt.y*ch, cw, ch);
             ctx.fill();
@@ -44,10 +39,10 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
         var y = 0;
         
         for (var it = pixArray.values(), val= null; val=it.next().value; ) {
-            var pp = intToPoint(val);
+            var pp = intTopointToIntnt(val);
             
             if(pp.y + 1 > pxPerH){
-                return false;
+                return false; // Reached the end. Return false.
             }
             
             if(Math.max(y, pp.y)!=y) y = pp.y;
@@ -55,12 +50,13 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
         
         for(var x = 0; x < pxPerW; x++){
             var c = 0;
-            var b1 = pixArray.has(poi(x-1, y));
-            var b2 = pixArray.has(poi(x, y));
-            var b3 = pixArray.has(poi(x+1, y));
-            c = b1 | (b2 << 1) | (b3 << 2);
+            // Get Neighbours left right and middle above the pixel.
+            var b1 = pixArray.has(pointToInt(x-1, y));
+            var b2 = pixArray.has(pointToInt(x, y));
+            var b3 = pixArray.has(pointToInt(x+1, y));
+            c = b1 | (b2 << 1) | (b3 << 2); // Convert neighbours to index for the given rules.
             if(rules[c]) {
-                pixArray.add(poi(x, y+1));
+                pixArray.add(pointToInt(x, y+1)); // Add the pixel if the rules fit.
             }
         }
         return true;

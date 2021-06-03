@@ -111,12 +111,12 @@ var rule_110 = [false, false, true, true, true, true, true, false];
 var cwidth = canv.width;
 var cheight = canv.height;
 
-var pxPerSide = Math.floor(600);
+var pxPerSide = Math.floor(300);
 
 //Initiate rule class
-var r = new rule(cwidth, cheight, rule_90, 300, 300, canv);
+var r = new rule(cwidth, cheight, rule_30, pxPerSide, pxPerSide, canv);
 
-r.setPixel(Math.floor(300/2), 0);
+r.setPixel(Math.floor((pxPerSide-1)/2), 0);
 
 var ti = setInterval(
 function(){

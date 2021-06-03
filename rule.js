@@ -73,6 +73,7 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
 
 var canv = document.getElementById("rule");
 
+//Rules
 var rule_30 = [false, true, true, false, true, false, true, false];
 var rule_90 = [false, true, false, true, true, false, true, false];
 
@@ -81,9 +82,13 @@ var cheight = canv.height;
 
 var pxPerSide = Math.floor(cwidth);
 
+//Initiate rule class
 var r = new rule(cwidth, cheight, rule_30, pxPerSide, pxPerSide, canv);
 
 r.setPixel(Math.floor(pxPerSide/2), 0);
 
+//Itterate all frames
 while(r.getNextFrame());
+
+//Draw to canvas
 r.draw();

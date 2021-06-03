@@ -41,10 +41,9 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
     var getNextFrame = function(){
         var y = 0;
         
-        let array = Array.from(pixArray);
         
-        for (var i = 0; i < array.length; i++ ) {
-            var val = array[i];
+        for (var i = 0; i < pixArray.length; i++ ) {
+            var val = pixArray[i];
             var pp = intToPoint(val);
             
             if(pp.y > pxPerH){
@@ -65,22 +64,20 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
             
             c = b1 | (b2 << 1) | (b3 << 2); // Convert neighbours to index for the given rules.
             if(rules[c]) {
-                pixArray.push(pointToInt(x, y + 1)); // Add the pixel if the rules fit.
+                setPixel(x, y + 1); // Add the pixel if the rules fit.
             }
         }
         return true;
     }
-    var knall = false, sec = false;
+    
     var removeLine = function(line){
         var temp = new Array();
         var y = 0;
         var itr = 0;
         
-        let array = Array.from(pixArray);
-        
-        for (var i = 0; i < array.length; i++ ) {
+        for (var i = 0; i < pixArray.length; i++ ) {
             itr++;
-            var pp = intToPoint(array[i]);
+            var pp = intToPoint(pixArray[i]);
             if(pp.y == line) continue;
             if(pp.y < line) temp.push(pointToInt(pp.x, pp.y));
             else if(pp.y > line) {temp.push(pointToInt(pp.x, pp.y - 1));}

@@ -41,7 +41,7 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
         for (var it = pixArray.values(), val= null; val=it.next().value; ) {
             var pp = intToPoint(val);
             
-            if(pp.y + 1 > pxPerH){
+            if(pp.y > pxPerH){
                 return false; // Reached the end. Return false.
             }
             y = Math.max(y, pp.y);
@@ -103,12 +103,12 @@ var rule_110 = [false, false, true, true, true, true, true, false];
 var cwidth = canv.width;
 var cheight = canv.height;
 
-var pxPerSide = Math.floor(512);
+var pxPerSide = Math.floor(801);
 
 //Initiate rule class
 var r = new rule(cwidth, cheight, rule_30, pxPerSide, pxPerSide, canv);
 
-r.setPixel(Math.floor((pxPerSide-1)/2), 0);
+r.setPixel(Math.floor((pxPerSide)/2), 0);
 
 //Itterate all frames
 while(r.getNextFrame());

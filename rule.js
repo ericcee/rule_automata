@@ -1,6 +1,6 @@
 var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
     
-    var pixArray = new Set(); // Pixels are stored in a HashSet
+    var pixArray = new Array(); // Pixels are stored in a array
     
     var ctx = canvas.getContext('2d');
     
@@ -10,7 +10,7 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
     
     var setPixel = function(x,y) {
         var val = pointToInt(x,y);
-        pixArray.add(val);
+        pixArray.push(val);
     }
     
     var intToPoint = function(x) {
@@ -27,7 +27,10 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
         
         ctx.fillStyle = "black";
         
-        for (var it = pixArray.values(), val= null; val=it.next().value; ) {
+        let array = Array.from(pixArray);
+        
+        for (var i = 0; i < array.length; i++ ) {
+            var val = array[i];
             var pt = intToPoint(val);
             ctx.beginPath();
             ctx.rect(pt.x*cw, pt.y*ch, cw, ch);
@@ -37,13 +40,17 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
     
     var getNextFrame = function(){
         var y = 0;
-        console.log(pixArray.size);
-        for (var it = pixArray.values(), val= null; val=it.next().value; ) {
+        
+        let array = Array.from(pixArray);
+        
+        for (var i = 0; i < array.length; i++ ) {
+            var val = array[i];
             var pp = intToPoint(val);
             
             if(pp.y > pxPerH){
                 return false; // Reached the end. Return false.
             }
+            
             y = Math.max(y, pp.y);
         }
         
@@ -52,28 +59,32 @@ var rule = function(width, height, rules, pxPerW, pxPerH, canvas) {
             // Get Neighbours left right and middle above the pixel.
             var b1 = 0, b2 = 0, b3 = 0;
             
-            if(x-1 >= 0) b1 = pixArray.has(pointToInt(x-1, y));
-            b2 = pixArray.has(pointToInt(x, y));
-            if(x+1 <= pxPerW-1) b3 = pixArray.has(pointToInt(x+1, y));
+            if(x-1 >= 0) b1 = pixArray.includes(pointToInt(x-1, y));
+            b2 = pixArray.includes(pointToInt(x, y));
+            if(x+1 <= pxPerW-1) b3 = pixArray.includes(pointToInt(x+1, y));
             
             c = b1 | (b2 << 1) | (b3 << 2); // Convert neighbours to index for the given rules.
             if(rules[c]) {
-                pixArray.add(pointToInt(x, y + 1)); // Add the pixel if the rules fit.
+                pixArray.push(pointToInt(x, y + 1)); // Add the pixel if the rules fit.
             }
         }
         return true;
     }
-    
+    var knall = false, sec = false;
     var removeLine = function(line){
-        var temp = new Set();
+        var temp = new Array();
         var y = 0;
-        for (var it = pixArray.values(), val= null; val=it.next().value; ) {
-            var pp = intToPoint(val);
-            
+        var itr = 0;
+        
+        let array = Array.from(pixArray);
+        
+        for (var i = 0; i < array.length; i++ ) {
+            itr++;
+            var pp = intToPoint(array[i]);
             if(pp.y == line) continue;
+            if(pp.y < line) temp.push(pointToInt(pp.x, pp.y));
+            else if(pp.y > line) {temp.push(pointToInt(pp.x, pp.y - 1));}
             
-            if(pp.y < line) temp.add(pointToInt(pp.x, pp.y));
-            else if(pp.y > line) temp.add(pointToInt(pp.x, pp.y - 1));
         }
         pixArray = temp;
     }
@@ -103,16 +114,20 @@ var rule_110 = [false, false, true, true, true, true, true, false];
 var cwidth = canv.width;
 var cheight = canv.height;
 
-var pxPerSide = Math.floor(801);
+var pxPerSide = Math.floor(256);
 
 //Initiate rule class
 var r = new rule(cwidth, cheight, rule_30, pxPerSide, pxPerSide, canv);
 
 r.setPixel(Math.floor((pxPerSide)/2), 0);
 
-//Itterate all frames
 while(r.getNextFrame());
-
-//Draw to canvas
-r.draw();
-
+var ti = setInterval(
+function(){
+    //Itterate all frames
+    while(r.getNextFrame());
+    
+    //Draw to canvas
+    r.draw();
+    r.removeLine(0);
+}, 50);
